@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  backend:
+    build: .
+    volumes:
+      - ./:/code
+      - site-packages:/usr/local/lib/python3.8/site-packages
+      - bin:/usr/local/bin
+    ports:
+      - 8000:8000
+    env_file: .env
+    command: wait-for-it --timeout=20 postgres:5432 -- python geoproject/manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - postgres
+
+  postgres:
+    image: kartoza/postgis
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    env_file: .env
+
+volumes:
+  site-packages:
+  bin:
+  postgres-data:
